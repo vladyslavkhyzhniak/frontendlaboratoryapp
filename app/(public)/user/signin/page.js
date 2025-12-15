@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { getAuth } from "firebase/auth";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiMail, FiLock, FiLogIn } from "react-icons/fi";
 
-export default function SignInForm() {
+
+function SignInFormContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const auth = getAuth();
-  const params = useSearchParams();
+  const params = useSearchParams(); 
   const router = useRouter();
   const returnUrl = params.get("returnUrl");
 
@@ -22,8 +23,7 @@ export default function SignInForm() {
     setError("");
     setLoading(true);
     
-    const email = e.target["name"].value;
-    const password = e.target["password"].value;
+ 
     
     setPersistence(auth, browserSessionPersistence)
       .then(() => {
@@ -37,7 +37,6 @@ export default function SignInForm() {
           })
           .catch((error) => {
             const errorCode = error.code;
-            const errorMessage = error.message;
             setError(getErrorMessage(errorCode));
             setLoading(false);
           });
@@ -102,7 +101,7 @@ export default function SignInForm() {
                 </div>
                 <input
                   id="email"
-                  name="name"
+                  name="email" 
                   type="email"
                   autoComplete="email"
                   required
@@ -161,3 +160,11 @@ export default function SignInForm() {
   );
 }
 
+
+export default function SignInForm() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-10">Ładowanie formularza...</div>}>
+      <SignInFormContent />
+    </Suspense>
+  );
+}
