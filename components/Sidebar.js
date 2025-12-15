@@ -13,7 +13,7 @@ const menuItems = [
   { href: "/", label: "Home", icon: FiHome },
   { href: "/user/profile", label: "Profile", icon: FiUser },
   // { href: "/user/changepassword", label: "Change Password", icon: FiLock },
-  // { href: "/user/signout", label: "Sign Out", icon: FiLogOut },
+  { href: "/user/signout", label: "Sign Out", icon: FiLogOut },
 ];
 
 export default function Sidebar() {

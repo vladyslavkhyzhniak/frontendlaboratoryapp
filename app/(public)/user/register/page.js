@@ -1,60 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
+import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FiMail, FiLock, FiUser } from "react-icons/fi";
 
-export default function RegisterPage() {
+export default function RegisterForm() {
+  const { user } = useAuth();
+  
+  if (user) {
+    return null;
+  }
+  
+  const auth = getAuth();
+  const router = useRouter();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [registerError, setRegisterError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const handleSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setError("");
+    setRegisterError("");
+    setLoading(true);
 
-
+    // walidacja obu równości haseł
     if (password !== confirmPassword) {
-      setError("Hasła nie są identyczne.");
+      setRegisterError("Hasła nie są identyczne.");
+      setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError("Hasło musi mieć co najmniej 6 znaków.");
+      setRegisterError("Hasło musi mieć co najmniej 6 znaków.");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/user/profile");
-    } catch (error) {
-      setError(getErrorMessage(error.code));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getErrorMessage = (errorCode) => {
-    switch (errorCode) {
-      case "auth/email-already-in-use":
-        return "Ten adres email jest już używany.";
-      case "auth/invalid-email":
-        return "Nieprawidłowy adres email.";
-      case "auth/operation-not-allowed":
-        return "Operacja nie jest dozwolona.";
-      case "auth/weak-password":
-        return "Hasło jest zbyt słabe.";
-      default:
-        return "Wystąpił błąd podczas rejestracji. Spróbuj ponownie.";
-    }
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("User registered!");
+        sendEmailVerification(auth.currentUser)
+          .then(() => {
+            console.log("Email verification send!");
+            signOut(auth).then(() => {
+              router.push("/user/verify");
+            });
+          })
+          .catch((error) => {
+            setRegisterError(error.message);
+            console.dir(error);
+            setLoading(false);
+          });
+      })
+      .catch((error) => {
+        setRegisterError(error.message);
+        console.dir(error);
+        setLoading(false);
+      });
   };
 
   return (
@@ -74,10 +81,10 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
+        <form className="mt-8 space-y-6" onSubmit={onSubmit}>
+          {registerError && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+              <p className="text-sm text-red-800 dark:text-red-200">{registerError}</p>
             </div>
           )}
           <div className="space-y-4">
