@@ -5,10 +5,13 @@ import { updateProfile } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore"; 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/AuthContext";
+
+import { useRouter } from "next/navigation"; 
 import { FiUser, FiMail, FiImage, FiMapPin } from "react-icons/fi";
 
 export default function ProfileForm() {
   const { user } = useAuth();
+  const router = useRouter();
   
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -71,6 +74,7 @@ export default function ProfileForm() {
       }, { merge: true });
 
       console.log("Profile updated");
+      alert("Profil został zaktualizowany!");
     } catch (e) {
       if (e.code === 'permission-denied') {
         setError("Brak uprawnień do zapisu danych.");
@@ -85,7 +89,7 @@ export default function ProfileForm() {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-full">
-        <p className="text-zinc-600 dark:text-zinc-400">Ładowanie...</p>
+        <p className="text-zinc-600 dark:text-zinc-400">Przekierowywanie do logowania...</p>
       </div>
     );
   }

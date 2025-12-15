@@ -15,6 +15,7 @@ const menuItems = [
   { href: "/user/profile", label: "Profile", icon: FiUser },
   { href: "/user/signout", label: "Sign Out", icon: FiLogOut },
   { href: "/user/articles", label: "Articles", icon: FiFileText },
+  { href: "/user/temat5", label: "Temat5", icon: FiFileText },
 ];
 
 export default function Sidebar() {
@@ -38,8 +39,7 @@ export default function Sidebar() {
                     isActive
                       ? "bg-zinc-800 text-white"
                       : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                  }`}
-                >
+                  }`}>
                   <Icon className="w-5 h-5" />
                   <span>{item.label}</span>
                 </Link>
