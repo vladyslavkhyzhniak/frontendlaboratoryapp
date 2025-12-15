@@ -6,14 +6,15 @@ import {
   FiHome, 
   FiUser, 
   FiLock,
-  FiLogOut 
+  FiLogOut,
+  FiFileText,
 } from "react-icons/fi";
 
 const menuItems = [
   { href: "/", label: "Home", icon: FiHome },
   { href: "/user/profile", label: "Profile", icon: FiUser },
-  // { href: "/user/changepassword", label: "Change Password", icon: FiLock },
   { href: "/user/signout", label: "Sign Out", icon: FiLogOut },
+  { href: "/user/articles", label: "Articles", icon: FiFileText },
 ];
 
 export default function Sidebar() {
